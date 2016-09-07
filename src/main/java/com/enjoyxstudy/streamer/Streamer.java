@@ -11,6 +11,10 @@ public abstract class Streamer<T, R> {
         return new BaseStreamer<T>();
     }
 
+    public static <T> Streamer<T, T> create() {
+        return new BaseStreamer<T>();
+    }
+
     protected abstract Stream<R> apply(Stream<T> stream);
 
     public Stream<R> build(Collection<T> source) {
@@ -19,6 +23,18 @@ public abstract class Streamer<T, R> {
 
     public Stream<R> build(Stream<T> source) {
         return apply(source);
+    }
+
+    public Streamer<T, R> distinct() {
+        return new DistinctStreamer<T, R>(this);
+    }
+
+    public <N> Streamer<T, N> flatMap(Function<? super R, Stream<? extends N>> mapper) {
+        return new FlatMapStreamer<T, R, N>(this, mapper);
+    }
+
+    public Streamer<T, R> limit(long maxSize) {
+        return new LimitStreamer<T, R>(this, maxSize);
     }
 
     public Streamer<T, R> filter(Predicate<? super R> predicate) {
