@@ -4,7 +4,9 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -134,4 +136,77 @@ public class StreamerTest {
         }
     }
 
+    @Test
+    public void testPeek() {
+
+        List<Integer> peekResults = new ArrayList<Integer>();
+
+        Streamer<Integer, Integer> streamer =
+                Streamer.create(Integer.class).peek(x -> {
+                    peekResults.add(x);
+                });
+
+        {
+            peekResults.clear();
+            List<Integer> actual =
+                    streamer.build(Arrays.asList(1, 2, 3, 4))
+                            .collect(Collectors.toList());
+
+            assertThat(actual, is(Arrays.asList(1, 2, 3, 4)));
+            assertThat(actual, is(peekResults));
+        }
+    }
+
+    @Test
+    public void testSkip() {
+
+        Streamer<Integer, Integer> streamer =
+                Streamer.create(Integer.class).skip(2);
+
+        {
+            List<Integer> actual =
+                    streamer.build(Arrays.asList(1))
+                            .collect(Collectors.toList());
+
+            assertThat(actual, is(Arrays.asList()));
+        }
+
+        {
+            List<Integer> actual =
+                    streamer.build(Arrays.asList(1, 2, 3, 4, 5))
+                            .collect(Collectors.toList());
+
+            assertThat(actual, is(Arrays.asList(3, 4, 5)));
+        }
+    }
+
+    @Test
+    public void testSorted() {
+
+        Streamer<Integer, Integer> streamer =
+                Streamer.create(Integer.class).sorted();
+
+        {
+            List<Integer> actual =
+                    streamer.build(Arrays.asList(2, 1, 5, 4, 3))
+                            .collect(Collectors.toList());
+
+            assertThat(actual, is(Arrays.asList(1, 2, 3, 4, 5)));
+        }
+    }
+
+    @Test
+    public void testSortedByComparator() {
+
+        Streamer<Integer, Integer> streamer =
+                Streamer.create(Integer.class).sorted(Comparator.reverseOrder());
+
+        {
+            List<Integer> actual =
+                    streamer.build(Arrays.asList(2, 1, 5, 4, 3))
+                            .collect(Collectors.toList());
+
+            assertThat(actual, is(Arrays.asList(5, 4, 3, 2, 1)));
+        }
+    }
 }

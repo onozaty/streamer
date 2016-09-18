@@ -1,6 +1,8 @@
 package com.enjoyxstudy.streamer;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -44,4 +46,21 @@ public abstract class Streamer<T, R> {
     public <N> Streamer<T, N> map(Function<? super R, ? extends N> mapper) {
         return new MapStreamer<T, R, N>(this, mapper);
     }
+
+    public Streamer<T, R> peek(Consumer<? super R> action) {
+        return new PeekStreamer<T, R>(this, action);
+    }
+
+    public Streamer<T, R> skip(long num) {
+        return new SkipStreamer<T, R>(this, num);
+    }
+
+    public Streamer<T, R> sorted() {
+        return new SortedStreamer<T, R>(this);
+    }
+
+    public Streamer<T, R> sorted(Comparator<? super R> comparator) {
+        return new SortedByComparatorStreamer<T, R>(this, comparator);
+    }
+
 }
