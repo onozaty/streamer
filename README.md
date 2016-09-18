@@ -13,13 +13,15 @@ Streamer<String, Integer> streamer =
                 .filter(x -> x != null)
                 .sorted();
 
-List<Integer> actual1 =
-        streamer.build(Arrays.asList("a", "2", "1", "", "000"))
-                .collect(Collectors.toList());
-assertThat(actual1, is(Arrays.asList(0, 1, 2)));
+streamer.build(Arrays.asList("a", "2", "1", "", "000"))
+        .collect(Collectors.toList()); // -> [0, 1, 2]
 
-List<Integer> actual2 =
-        streamer.build(Arrays.asList("100", "abc"))
-                .collect(Collectors.toList());
-assertThat(actual2, is(Arrays.asList(100)));
+streamer.build(Arrays.asList("1", "2", "-1"))
+        .collect(Collectors.toList()); // -> [-1, 1, 2]
+
+streamer.build(Arrays.asList("a"))
+        .collect(Collectors.toList()); // -> []
+
+streamer.build(Arrays.asList("100", "abc"))
+        .collect(Collectors.toList()); // -> [100]
 ```
